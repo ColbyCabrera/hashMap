@@ -188,7 +188,7 @@ class HashMap {
 
     if (this.arr[bucket] != null || this.arr[bucket] != undefined) {
       if (this.arr[bucket] instanceof LinkedList) {
-        let index = this.arr[bucket].find();
+        let index = this.arr[bucket].find(key);
         if (index != null) {
           this.arr[bucket].at(index).value = value;
         } else {
@@ -211,12 +211,25 @@ class HashMap {
 
   get(key) {
     let bucket = this.hash(key) % this.arr.length;
+    if (this.arr[bucket] instanceof LinkedList) {
+      let index = this.arr[bucket].find(key);
+      if (index != null) {
+        return this.arr[bucket].at(index);
+      } else {
+        return null;
+      }
+    }
     return this.arr[bucket] ? this.arr[bucket] : null;
   }
 
   has(key) {
     let bucket = this.hash(key) % this.arr.length;
-    return this.arr[bucket] ? true : false;
+    if (this.arr[bucket] instanceof LinkedList) {
+      let index = this.arr[bucket].find(key);
+      return (index != null) ? true : false;
+    }
+    
+    return this.arr[bucket].key == key ? true : false;
   }
 
   remove(key) {
@@ -285,5 +298,8 @@ let test = new HashMap();
 test.set("Sara", 5);
 test.set("Sara", 6);
 test.set("raSa", 5);
+test.set("woo", 80);
+console.log(test.has("Sara"));
+console.log(test.has("owo"));
 
-console.log(test.arr);
+
