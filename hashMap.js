@@ -5,8 +5,8 @@ class LinkedList {
     this.listTail = null;
   }
 
-  append(value) {
-    const node = new Node(value);
+  append(data) {
+    const node = new Node(data.key, data.value);
     if (this.listSize == 0) {
       this.listHead = node;
     } else {
@@ -18,8 +18,8 @@ class LinkedList {
     this.listSize++;
   }
 
-  prepend(value) {
-    const node = new Node(value);
+  prepend(key, value) {
+    const node = new Node(key, value);
     if (this.listSize == 0) {
       this.listTail = node;
     } else {
@@ -29,16 +29,16 @@ class LinkedList {
     this.listSize++;
   }
 
-  insertAt(value, index) {
+  insertAt(key, value, index) {
     if (index > this.listSize || index < 0) return "Out of list bounds";
     if (index == 0) {
-      this.prepend(value);
+      this.prepend(key, value);
       return;
     }
 
     let current = this.listHead;
     let nodeAtIndexPlus1;
-    const node = new Node(value);
+    const node = new Node(key, value);
 
     for (let i = 0; i < index - 1; i++) {
       current = current.nextNode;
@@ -124,11 +124,11 @@ class LinkedList {
     return false;
   }
 
-  find(value) {
+  find(key) {
     let current = this.listHead;
 
     for (let i = 0; i < this.listSize; i++) {
-      if (current.value === value) return i;
+      if (current.key === key) return i;
       current = current.nextNode;
     }
 
@@ -184,10 +184,29 @@ class HashMap {
       let extension = new Array(32);
       extension.push(...this.arr);
       this.arr = extension;
-
     }
 
-    this.arr[bucket] = node;
+    if (this.arr[bucket] != null || this.arr[bucket] != undefined) {
+      if (this.arr[bucket] instanceof LinkedList) {
+        let index = this.arr[bucket].find();
+        if (index != null) {
+          this.arr[bucket].at(index).value = value;
+        } else {
+          this.arr[bucket].append(node);
+        }
+      } else {
+        if (this.arr[bucket].key == key) {
+          this.arr[bucket] = node;
+        } else {
+          let list = new LinkedList();
+          list.append(node);
+          list.append(this.arr[bucket]);
+          this.arr[bucket] = list;
+        }
+      }
+    } else {
+      this.arr[bucket] = node;
+    }
   }
 
   get(key) {
@@ -264,24 +283,7 @@ class HashMap {
 
 let test = new HashMap();
 test.set("Sara", 5);
-test.set("zy", 6);
-test.set("asara", 87);
-test.set("Sar46sda", 2);
-test.set("jfsdfsdf", 1);
-test.set("asarffsdsd43", 87);
-test.set("Sa", 2);
-test.set("jttaraWSERW", 1);
-test.set("asarssssssss6", 87);
-test.set("Sssssssss6r46sdssssssss6", 2);
-test.set("ssssssss6sssssssss6rffsdsd43", 87);
-test.set("Sssssssss6", 2);
-test.set("jttssssssss6raWSERW", 1);
-test.set("1", 1)
-test.set("2", 1)
-test.set("4", 1)
-test.set("5", 1)
+test.set("Sara", 6);
+test.set("raSa", 5);
 
-
-console.log(test.keys());
-console.log(test.values());
-console.log(test.entries());
+console.log(test.arr);
