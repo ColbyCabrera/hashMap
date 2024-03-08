@@ -149,6 +149,21 @@ class LinkedList {
 
     return (string += "null");
   }
+
+  toArray() {
+    let arr = [];
+
+    if (this.head() != null) {
+      let current = this.head();
+
+      do {
+        arr.push([current.key, current.value]);
+        current = current.nextNode;
+      } while (current != null);
+    }
+
+    return arr;
+  }
 }
 
 class Node {
@@ -219,30 +234,46 @@ class HashMap {
         return null;
       }
     }
-    return this.arr[bucket] ? this.arr[bucket] : null;
+    return this.arr[bucket].key == key ? this.arr[bucket] : null;
   }
 
   has(key) {
     let bucket = this.hash(key) % this.arr.length;
     if (this.arr[bucket] instanceof LinkedList) {
       let index = this.arr[bucket].find(key);
-      return (index != null) ? true : false;
+      return index != null ? true : false;
     }
-    
+
     return this.arr[bucket].key == key ? true : false;
   }
 
   remove(key) {
     let bucket = this.hash(key) % this.arr.length;
-    this.arr[bucket] = null;
-    return this.arr[bucket] ? true : false;
+    if (this.arr[bucket] instanceof LinkedList) {
+      let index = this.arr[bucket].find(key);
+      if (index != null) {
+        this.arr[bucket].removeAt(index);
+        return true;
+      }
+    } else {
+      if (this.arr[bucket].key == key) {
+        this.arr[bucket] = null;
+        return true;
+      } else {
+        return false;
+      }
+    }
   }
 
   length() {
     let length = 0;
     this.arr.forEach((element) => {
       if (element != null) {
-        length++;
+        if (element instanceof LinkedList) {
+          length += element.size();
+        } else {
+          length++;
+        }
       }
     });
 
@@ -259,7 +290,13 @@ class HashMap {
     let newArr = [];
     this.arr.forEach((element) => {
       if (element != null) {
-        newArr.push(element.key);
+        if (element instanceof LinkedList) {
+          element.toArray().forEach((element) => {
+            newArr.push(element[0]);
+          });
+        } else {
+          newArr.push(element.key);
+        }
       }
     });
 
@@ -270,7 +307,13 @@ class HashMap {
     let newArr = [];
     this.arr.forEach((element) => {
       if (element != null) {
-        newArr.push(element.value);
+        if (element instanceof LinkedList) {
+          element.toArray().forEach((element) => {
+            newArr.push(element[1]);
+          });
+        } else {
+          newArr.push(element.value);
+        }
       }
     });
 
@@ -281,7 +324,13 @@ class HashMap {
     let newArr = [];
     this.arr.forEach((element) => {
       if (element != null) {
-        newArr.push([element.key, element.value]);
+        if (element instanceof LinkedList) {
+          element.toArray().forEach((element) => {
+            newArr.push(element);
+          });
+        } else {
+          newArr.push([element.key, element.value]);
+        }
       }
     });
 
@@ -300,6 +349,4 @@ test.set("Sara", 6);
 test.set("raSa", 5);
 test.set("woo", 80);
 console.log(test.has("Sara"));
-console.log(test.has("owo"));
-
-
+console.log(test.entries());
